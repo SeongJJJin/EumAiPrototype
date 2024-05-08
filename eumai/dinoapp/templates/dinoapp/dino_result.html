@@ -1,0 +1,89 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>분석 결과</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        h1 {
+            margin: 20px 0;
+        }
+
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 15px; /* 셀 패딩을 늘려서 간격 조정 */
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        img {
+            width: 150px; /* 이미지 너비를 조정 */
+            height: auto;
+            transition: transform 0.25s ease; /* 확대/축소 효과를 부드럽게 */
+        }
+
+        /* 이미지 호버 시 */
+        img:hover {
+            cursor: pointer;
+            transform: scale(1.5); /* 호버 시 이미지를 1.5배로 확대 */
+        }
+    </style>
+</head>
+<body>
+    <h1>분석 결과</h1>
+    <div>
+        {% if error_results_dic %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>이미지 파일</th>
+                        <th>공종</th>
+                        <th>세부 공종</th>
+                        <th>하자 유형</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file_name, result in error_results_dic %}
+                        <tr>
+                            <td><img src="{% static 'images/'|add:file_name %}" alt="Image" onclick="zoomImage(this)"></td>
+                            <td{% if result.0 == 'NULL' %} style="color: red;"{% endif %}>{{ result.0 }}</td>
+                            <td{% if result.1 == 'NULL' %} style="color: red;"{% endif %}>{{ result.1 }}</td>
+                            <td{% if result.2 == 'NULL' %} style="color: red;"{% endif %}>{{ result.2 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>결과가 없습니다.</p>
+        {% endif %}
+    </div>
+<script>
+    function zoomImage(img) {
+        // 클릭 시 이미지를 새 창에서 열기
+        window.open(img.src, '_blank');
+    }
+</script>
+</body>
+</html>

@@ -16,10 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from eumai_api import urls as eumai_urls
+
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
-    path('eumais/', include(eumai_urls)),
+    path('', include('dinoapp.urls'))
 ]
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.DINOAPP_STATIC_ROOT)

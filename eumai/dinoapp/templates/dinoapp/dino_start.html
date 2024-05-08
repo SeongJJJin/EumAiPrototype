@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Start Inference</title>
+    <style>
+        /* 화면 정중앙에 요소 배치 */
+        .centered {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        /* 로딩 메시지 숨김 */
+        #loadingMessage {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="centered">
+    <button id="startButton" onclick="startInference()">START</button>
+    <div id="loadingMessage">분석 중...</div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+function startInference() {
+    // 버튼 숨기기
+    document.getElementById('startButton').style.display = 'none';
+    // 로딩 메시지 표시
+    document.getElementById('loadingMessage').style.display = 'block';
+
+    $.ajax({
+        type: "POST",
+        url: "inference/",
+        data: {},
+        success: function(response) {
+            window.location.href = "inference_result/";
+        },
+        error: function(error) {
+            console.log(error);
+            // 오류 발생 시 사용자에게 알림
+            alert('오류가 발생했습니다. 콘솔을 확인해주세요.');
+            // 버튼 다시 보이게 하고, 로딩 메시지 숨기기
+            document.getElementById('startButton').style.display = 'block';
+            document.getElementById('loadingMessage').style.display = 'none';
+        }
+    });
+}
+</script>
+
+</body>
+</html>
