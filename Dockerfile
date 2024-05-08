@@ -8,7 +8,7 @@ RUN pip3 install -r requirements.txt
 
 ENV PROFILE_NAME eum
 ENV REGION_NAME ap-northeast-2
-ENV ENDPOINT_NAME dinov2-20240508125943
+ENV ENDPOINT_NAME default-endpoint
 
 WORKDIR /app/eumai
 CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
