@@ -6,7 +6,7 @@ WORKDIR /app
 RUN python -m venv venv && . venv/bin/activate
 RUN pip3 install -r requirements.txt
 
-ENV PROFILE_NAME eum
+ENV PROFILE_NAME default-profile
 ENV REGION_NAME ap-northeast-2
 ENV ENDPOINT_NAME default-endpoint
 
