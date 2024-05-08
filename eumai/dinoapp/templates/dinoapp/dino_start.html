@@ -2,17 +2,49 @@
 <html>
 <head>
     <title>Start Inference</title>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <style>
-        /* 화면 정중앙에 요소 배치 */
-        .centered {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column; /* 요소들을 세로로 정렬 */
         }
 
-        /* 로딩 메시지 숨김 */
+        /* 스크롤 영역과 버튼을 포함하는 컨테이너 */
+        .content-container {
+            text-align: center;
+            display: flex;
+            flex-direction: column; /* 버튼을 스크롤 바로 아래에 위치시키기 위해 */
+            align-items: center;
+        }
+
+        .scroll-container {
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 20px 0;
+            display: inline-block; /* 중앙 정렬을 위해 */
+            max-width: 620px; /* 이미지 6장과 마진을 고려한 최대 너비 */
+        }
+
+        .scroll-container img {
+            margin-right: 10px;
+            width: 100px; /* 이미지 크기 조정 */
+            transition: transform .2s; /* 확대 효과 */
+        }
+
+        .scroll-container img:hover {
+            transform: scale(1.5); /* 마우스 오버 시 확대 */
+        }
+
+        #startButton {
+            font-size: 20px; /* 버튼 글꼴 크기 */
+            padding: 15px 30px; /* 버튼 패딩 */
+            margin-top: 20px; /* 스크롤 영역과의 간격 */
+        }
+
         #loadingMessage {
             display: none;
         }
@@ -20,12 +52,20 @@
 </head>
 <body>
 
-<div class="centered">
+<div class="content-container">
+    <div class="scroll-container">
+        {% load static %}
+        {% for image in image_files %}
+            <img src="{% static image %}" alt="image">
+        {% endfor %}
+    </div>
+
     <button id="startButton" onclick="startInference()">START</button>
     <div id="loadingMessage">분석 중...</div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script>
 function startInference() {
     // 버튼 숨기기
@@ -38,6 +78,7 @@ function startInference() {
         url: "inference/",
         data: {},
         success: function(response) {
+            console.log(response)
             window.location.href = "inference_result/";
         },
         error: function(error) {
@@ -51,6 +92,5 @@ function startInference() {
     });
 }
 </script>
-
 </body>
 </html>
