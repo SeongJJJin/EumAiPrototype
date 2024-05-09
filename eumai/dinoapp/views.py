@@ -20,7 +20,7 @@ def inference_result(request):
 
 def dino_start(request):
     images_dir = os.path.join(settings.DINOAPP_STATIC_ROOT, 'images')
-    image_files = [os.path.join('images', img) for img in os.listdir(images_dir) if img.endswith((".png", ".jpg", ".jpeg", ".gif"))]
+    image_files = [os.path.join('images', img) for img in os.listdir(images_dir) if img.endswith((".png", ".jpg"))]
     context = {"image_files" : image_files}
     return render(request, 'dinoapp/dino_start.html', context)
 
@@ -62,29 +62,33 @@ def result_process(result_dic):
 
         elif result_dic[file_path]["prediction"][1][0] == 1: # Tile
             tile_errors = find_index(result_dic[file_path]["prediction"][2][0])
-            # 세부공종
-            if len(tile_errors) > 1:
-                error_results_dic[file_name] = ["NULL", "TILE", TILE[tile_errors[0]]] ## 하자 유형 여러개 반복해서 추가
-            else:
-                # tile_error_num = find_index(result_dic[file_path]["prediction"][2][0])
-                print("TILE", TILE[tile_errors[0]])
+            error_results_dic[file_name] = ["NULL", "TILE", [TILE[i] for i in tile_errors]]
 
-                # 하자유형
-                error_results_dic[file_name] = ["NULL", "TILE", TILE[tile_errors[0]]]
+            # # 세부공종
+            # if len(tile_errors) > 1:
+            #     # 하자유형 2개 이상
+            #     error_results_dic[file_name] = ["NULL", "TILE", [TILE[i] for i in tile_errors]]
+            # else:
+            #     # tile_error_num = find_index(result_dic[file_path]["prediction"][2][0])
+            #     print("TILE", TILE[tile_errors[0]])
+            #
+            #     # 하자유형 1개
+            #     error_results_dic[file_name] = ["NULL", "TILE", TILE[tile_errors[0]]]
 
         elif result_dic[file_path]["prediction"][1][0] == 2: # Paper
             paper_errors = find_index(result_dic[file_path]["prediction"][2][0])
-            # 세부공종
-            if len(paper_errors) > 1:
-                # 하자 유형 두개 이상일 때
-                pass
-            else:
-                # paper_error_num = find_index(result_dic[file_path]["prediction"][2][0])
-                print("PAPER", PAPER[paper_errors[0]])
+            error_results_dic[file_name] = ["NULL", "PAPER", [PAPER[i] for i in paper_errors]]
 
-                # 하자유형
-                error_results_dic[file_name] = ["NULL", "PAPER", PAPER[paper_errors[0]]]
-
+            # # 세부공종
+            # if len(paper_errors) > 1:
+            #     # 하자유형 2개 이상
+            #     error_results_dic[file_name] = ["NULL", "PAPER", [PAPER[i] for i in paper_errors]]
+            # else:
+            #     # paper_error_num = find_index(result_dic[file_path]["prediction"][2][0])
+            #     print("PAPER", PAPER[paper_errors[0]])
+            #
+            #     # 하자유형 1개
+            #     error_results_dic[file_name] = ["NULL", "PAPER", PAPER[paper_errors[0]]]
         else:
             pass
 
@@ -95,13 +99,16 @@ def file_name_slicer(file_path):
     return file_name
 
 def find_index(acc_list):
-    # max_value = max(acc_list) # 가장 확률이 높은 하자 유형
-    # return acc_list.index(max_value)
+    # errors = [i for i, score in enumerate(acc_list) if score >= 0.3] or [acc_list.index(max(acc_list))]
 
     errors = []
     for score in acc_list:
-        if score >= 0.5:
+        if score >= 0.3:
             errors.append(acc_list.index(score))
+
+    if len(errors) == 0:
+        max_score = max(acc_list)
+        errors.append(acc_list.index(max_score))
 
     return errors
 

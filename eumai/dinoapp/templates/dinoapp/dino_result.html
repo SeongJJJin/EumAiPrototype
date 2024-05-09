@@ -1,4 +1,5 @@
 {% load static %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -27,7 +28,7 @@
         th, td {
             border: 1px solid #ddd;
             text-align: left;
-            padding: 15px; /* 셀 패딩을 늘려서 간격 조정 */
+            padding: 15px;
         }
 
         th {
@@ -39,19 +40,35 @@
         }
 
         img {
-            width: 150px; /* 이미지 너비를 조정 */
+            width: 150px;
             height: auto;
-            transition: transform 0.25s ease; /* 확대/축소 효과를 부드럽게 */
+            transition: transform 0.25s ease;
         }
 
-        /* 이미지 호버 시 */
         img:hover {
             cursor: pointer;
-            transform: scale(1.5); /* 호버 시 이미지를 1.5배로 확대 */
+            transform: scale(1.5);
+        }
+
+        /* "Inference" 버튼 스타일 */
+        .inference-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
+    <!-- "Inference" 버튼 추가 -->
+    <button class="inference-btn" onclick="location.href='http://127.0.0.1:8000/'">Inference</button>
+
     <h1>분석 결과</h1>
     <div>
         {% if error_results_dic %}
@@ -81,7 +98,6 @@
     </div>
 <script>
     function zoomImage(img) {
-        // 클릭 시 이미지를 새 창에서 열기
         window.open(img.src, '_blank');
     }
 </script>
