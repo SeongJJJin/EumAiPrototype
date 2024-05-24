@@ -4,47 +4,54 @@
     <title>Start Inference</title>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <style>
+        /* 기존 스타일은 유지 */
         body, html {
             height: 100%;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column; /* 요소들을 세로로 정렬 */
+            flex-direction: column;
         }
-
-        /* 스크롤 영역과 버튼을 포함하는 컨테이너 */
         .content-container {
             text-align: center;
             display: flex;
-            flex-direction: column; /* 버튼을 스크롤 바로 아래에 위치시키기 위해 */
+            flex-direction: column;
             align-items: center;
         }
-
         .scroll-container {
-            overflow-x: auto;
-            white-space: nowrap;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 620px;
             padding: 20px 0;
-            display: inline-block; /* 중앙 정렬을 위해 */
-            max-width: 620px; /* 이미지 6장과 마진을 고려한 최대 너비 */
+            gap: 10px;
         }
-
         .scroll-container img {
-            margin-right: 10px;
-            width: 100px; /* 이미지 크기 조정 */
-            transition: transform .2s; /* 확대 효과 */
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            transition: transform .2s;
         }
-
         .scroll-container img:hover {
-            transform: scale(1.5); /* 마우스 오버 시 확대 */
+            transform: scale(1.5);
         }
-
-        #startButton {
-            font-size: 20px; /* 버튼 글꼴 크기 */
-            padding: 15px 30px; /* 버튼 패딩 */
-            margin-top: 20px; /* 스크롤 영역과의 간격 */
+        .image-label {
+            cursor: pointer;
+            display: inline-block;
         }
-
+        .image-checkbox:checked + .image {
+            border: 3px solid #4CAF50;
+            transform: scale(1.1);
+        }
+        .image-checkbox {
+            display: none;
+        }
+        #startButton, .control-button {
+            font-size: 20px;
+            padding: 15px 30px;
+            margin: 10px; /* 기존 margin-top 제거하고, 양쪽 마진 추가 */
+        }
         #loadingMessage {
             display: none;
         }
@@ -52,44 +59,67 @@
 </head>
 <body>
 
-<div class="content-container">
-    <div class="scroll-container">
-        {% load static %}
-        {% for image in image_files %}
-            <img src="{% static image %}" alt="image">
-        {% endfor %}
+<form id="imageForm" method="post" enctype="multipart/form-data">
+    <div class="content-container">
+        <!-- 전체 선택 및 전체 해제 버튼 추가 -->
+        <div>
+            <button type="button" class="control-button" onclick="selectAllImages(true)">전체 선택</button>
+            <button type="button" class="control-button" onclick="selectAllImages(false)">전체 해제</button>
+        </div>
+        <div class="scroll-container">
+            {% load static %}
+            {% for image in image_files %}
+                <label class="image-label">
+                    <input type="checkbox" name="image" value="{{ image }}" class="image-checkbox" hidden>
+                    <img src="{% static image %}" alt="image" class="image">
+                </label>
+            {% endfor %}
+        </div>
+        <button type="button" id="startButton" onclick="startInference()">START</button>
     </div>
-
-    <button id="startButton" onclick="startInference()">START</button>
     <div id="loadingMessage">분석 중...</div>
-</div>
+</form>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script>
 function startInference() {
-    // 버튼 숨기기
+    // 기존의 startInference 코드 유지
     document.getElementById('startButton').style.display = 'none';
-    // 로딩 메시지 표시
     document.getElementById('loadingMessage').style.display = 'block';
+
+    // 선택된 이미지를 배열로 수집
+    var selectedImages = [];
+    $('.image-checkbox:checked').each(function() {
+        selectedImages.push($(this).val());
+    });
+
+    // 데이터 객체에 선택된 이미지 추가
+    var data = {
+        images: selectedImages
+    };
 
     $.ajax({
         type: "POST",
         url: "inference/",
-        data: {},
+        data: JSON.stringify(data), // 데이터를 JSON 문자열로 변환
+        contentType: "application/json", // Content-Type을 JSON으로 설정
         success: function(response) {
             console.log(response)
             window.location.href = "inference_result/";
         },
         error: function(error) {
             console.log(error);
-            // 오류 발생 시 사용자에게 알림
             alert('오류가 발생했습니다. 콘솔을 확인해주세요.');
-            // 버튼 다시 보이게 하고, 로딩 메시지 숨기기
             document.getElementById('startButton').style.display = 'block';
             document.getElementById('loadingMessage').style.display = 'none';
         }
     });
+}
+
+function selectAllImages(selectAll) {
+    // 모든 체크박스를 선택하거나 해제
+    $('.image-checkbox').prop('checked', selectAll);
 }
 </script>
 </body>

@@ -3,31 +3,26 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from glob import glob
+from ..fixedValue.errors_category import MAINTYPE, SUBTYPE, ERRORS
 import os
 import json
 import boto3
 
 load_dotenv()
-TILE = ["TILE_BREAK", "TILE_CRACK", "TILE_ERROR_LINE", "TILE_SCRATCH"]
-PAPER = ["PAPERING_BREAK", "PAPERING_ERROR_COTTON", "PAPERING_ERROR_JOINT", "PAPERING_EXCITED_HOLD", "PAPERING_MOLD", "PAPERING_POLLUTION_HOLD", "PAPERING_UNDEVELOPED", "PAPERING_WRINKLE_HOLD"]
-error_results_dic = {}
 
-def inference_result(request):
-    items = error_results_dic.items()
-    context = {'error_results_dic': items}
-    return render(request, 'dinoapp/dino_result.html', context)
-
-def dino_start(request):
+def inference_start(request):
     images_dir = os.path.join(settings.DINOAPP_STATIC_ROOT, 'images')
     image_files = [os.path.join('images', img) for img in os.listdir(images_dir) if img.endswith((".png", ".jpg"))]
     context = {"image_files" : image_files}
     return render(request, 'dinoapp/dino_start.html', context)
 
 @csrf_exempt
-def dino_inference(request):
+def inference_processing(request):
     if request.method == 'POST':
-        bytes_dic = image_to_text()
+        selected_image = json.loads(request.body.decode('utf-8'))
+        selected_image_list = selected_image.get('images', [])
+
+        bytes_dic = image_to_text(selected_image_list)
         result_dic = {}
         for key, value in bytes_dic.items():
 
@@ -44,14 +39,25 @@ def dino_inference(request):
             result = result.decode('utf-8')
             result_dic[key] = json.loads(result)
 
-            # 테스트용 (지우자)
-            print(result_dic)
-        error_results_dic = result_process(result_dic)
+        global error_results_dic
+        error_results_dic = {}
+        error_results_dic = result_processing(result_dic)
+
         return JsonResponse(error_results_dic)
     else:
         return render(request, 'dinoapp/dino_start.html')
 
-def result_process(result_dic):
+def inference_result(request):
+    items = error_results_dic.items()
+    context = {
+        'error_results_dic': items,
+        'main_type': MAINTYPE,
+        'sub_type': SUBTYPE,
+        'errors' : []
+    }
+    return render(request, 'dinoapp/dino_result.html', context)
+
+def result_processing(result_dic):
     # 0 : null, 1 : Tile, 2 : Paper
     for file_path in result_dic.keys():
         file_name = file_name_slicer(file_path)
@@ -62,33 +68,12 @@ def result_process(result_dic):
 
         elif result_dic[file_path]["prediction"][1][0] == 1: # Tile
             tile_errors = find_index(result_dic[file_path]["prediction"][2][0])
-            error_results_dic[file_name] = ["NULL", "TILE", [TILE[i] for i in tile_errors]]
-
-            # # 세부공종
-            # if len(tile_errors) > 1:
-            #     # 하자유형 2개 이상
-            #     error_results_dic[file_name] = ["NULL", "TILE", [TILE[i] for i in tile_errors]]
-            # else:
-            #     # tile_error_num = find_index(result_dic[file_path]["prediction"][2][0])
-            #     print("TILE", TILE[tile_errors[0]])
-            #
-            #     # 하자유형 1개
-            #     error_results_dic[file_name] = ["NULL", "TILE", TILE[tile_errors[0]]]
+            error_results_dic[file_name] = [MAINTYPE[0], SUBTYPE[0], [ERRORS[SUBTYPE[0]][i] for i in tile_errors]]
 
         elif result_dic[file_path]["prediction"][1][0] == 2: # Paper
             paper_errors = find_index(result_dic[file_path]["prediction"][2][0])
-            error_results_dic[file_name] = ["NULL", "PAPER", [PAPER[i] for i in paper_errors]]
+            error_results_dic[file_name] = [MAINTYPE[0], SUBTYPE[1], [ERRORS[SUBTYPE[1]][i] for i in paper_errors]]
 
-            # # 세부공종
-            # if len(paper_errors) > 1:
-            #     # 하자유형 2개 이상
-            #     error_results_dic[file_name] = ["NULL", "PAPER", [PAPER[i] for i in paper_errors]]
-            # else:
-            #     # paper_error_num = find_index(result_dic[file_path]["prediction"][2][0])
-            #     print("PAPER", PAPER[paper_errors[0]])
-            #
-            #     # 하자유형 1개
-            #     error_results_dic[file_name] = ["NULL", "PAPER", PAPER[paper_errors[0]]]
         else:
             pass
 
@@ -112,13 +97,13 @@ def find_index(acc_list):
 
     return errors
 
-def image_to_text():
-    path = os.path.join(settings.DINOAPP_STATIC_ROOT, 'images/*')
-    img_list = glob(path)
+def image_to_text(selected_image_list):
     bytes_dic = {}
-    for image in img_list:
-        with open(image, 'rb') as img:
+
+    for selected_image in selected_image_list:
+        selected_image_path = os.path.join(settings.DINOAPP_STATIC_ROOT, selected_image)
+        with open(selected_image_path, 'rb') as img:
             bytes_img = bytearray(img.read())
-            bytes_dic[image] = bytes_img
+            bytes_dic[selected_image] = bytes_img
 
     return bytes_dic
