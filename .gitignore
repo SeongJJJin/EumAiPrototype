@@ -3,3 +3,7 @@
 
 # dotenv
 .env.dinoapp
+
+# directory
+dinoapp/holded_data
+dinoapp/fixedValue
