@@ -15,7 +15,7 @@
 #     images_dir = os.path.join(settings.DINOAPP_STATIC_ROOT, 'images')
 #     image_files = [os.path.join('images', img) for img in os.listdir(images_dir) if img.endswith((".png", ".jpg"))]
 #     context = {"image_files" : image_files}
-#     return render(request, 'dinoapp/dino_start.html', context)
+#     return render(request, 'dinoapp/inference_start_view.html', context)
 #
 # @csrf_exempt
 # def inference_processing(request):
@@ -47,7 +47,7 @@
 #
 #         return JsonResponse(error_results_dic)
 #     else:
-#         return render(request, 'dinoapp/dino_start.html')
+#         return render(request, 'dinoapp/inference_start_view.html')
 #
 # def inference_result(request):
 #     items = error_results_dic.items()
@@ -57,7 +57,7 @@
 #         'sub_type': SUBTYPE,
 #         'errors' : []
 #     }
-#     return render(request, 'dinoapp/dino_result.html', context)
+#     return render(request, 'dinoapp/inference_result_view.html', context)
 #
 # def result_processing(result_dic):
 #     # 0 : null, 1 : Tile, 2 : Paper

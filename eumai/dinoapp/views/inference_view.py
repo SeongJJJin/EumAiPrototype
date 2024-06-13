@@ -19,7 +19,7 @@ inspection_data = {}
 error_results_dic = {}
 
 def apart_detail_selecter(request):
-    return render(request, 'dinoapp/apart_detail_selecter.html')
+    return render(request, 'apart_selecter_view.html')
 
 @csrf_exempt
 def inference_start(request):
@@ -40,7 +40,7 @@ def inference_start(request):
             print("apt_pk or status 존재 하지 않음.")
             inspection_data = {}
 
-    return render(request, 'dinoapp/dino_start.html', {'inspection_data': inspection_data})
+    return render(request, 'inference_start_view.html', {'inspection_data': inspection_data})
 
 
 @async_to_sync
@@ -53,7 +53,7 @@ async def inference_processing(request):
 
         return JsonResponse(error_results_dic)
     else:
-        return render(request, 'dinoapp/dino_start.html')
+        return render(request, 'inference_start_view.html')
 
 async def async_inference_processing():
     all_result = {}
@@ -76,10 +76,7 @@ async def async_inference_processing():
 def inference_result(request):
     print(error_results_dic)
     final_data = insert_construct_all_defect(inspection_data, error_results_dic)
-    return render(request, 'dinoapp/dino_result.html', {"final_data": final_data})
-
-
-
+    return render(request, 'inference_result_view.html', {"final_data": final_data})
 
 
 # 데이터 수정 및 적용 했을 때 처리 함수

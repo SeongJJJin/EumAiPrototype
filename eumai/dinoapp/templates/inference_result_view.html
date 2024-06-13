@@ -14,9 +14,9 @@
         <button id="inference-btn" onclick="location.href='http://127.0.0.1:8000/inference_start/'">하자 리스트 불러오기</button>
     </div>
     <div id="all-apply-container">
-        <button id="all-apply-btn">모두 적용하기</button>
+        <button id="all-apply-btn" onclick="">모두 적용하기</button>
     </div>
-    <div id="container">
+    <div>
         <div id="result-container">
             <div>
                 <h3>전체 하자</h3>
@@ -126,21 +126,6 @@
         {% else %}
             <p>결과가 없습니다.</p>
         {% endif %}
-    </div>
-
-    <!-- 모달 창 -->
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <h2>내용 수정</h2>
-            <input type="hidden" id="modal-key">
-            <input type="hidden" id="modal-field">
-            <label for="modal-value">값:</label>
-            <select id="modal-value">
-                <!-- 옵션은 JavaScript로 동적으로 채워짐 -->
-            </select>
-            <button onclick="saveChanges()">저장</button>
-            <button onclick="closeModal()">닫기</button>
-        </div>
     </div>
 
     <script>

@@ -75,6 +75,55 @@ img:hover {
     width: 80%;  /* 컨테이너의 너비를 80%로 설정 (필요에 따라 조정 가능) */
 }
 
+
+
+
+
+
+
+/* 하자리스트 상태 스타일 *//* 하자리스트 상태 스타일 *//* 하자리스트 상태 스타일 *//* 하자리스트 상태 스타일 */
+.status-container {
+    border-radius: 15px; /* 라운드 정도를 조절 */
+    padding: 5px 10px; /* 내부 여백 설정 */
+    display: inline-block;
+    color: white;
+}
+.접수대기 {
+    background-color: #AAB9FF;
+}
+.접수확인 {
+    background-color: #A5D8FA;
+}
+.처리중 {
+    background-color: #FFA887;
+}
+.처리완료 {
+    background-color: #50C785;
+}
+.확검중 {
+    background-color: #147814;
+}
+.보수완료 {
+    background-color: #FF8E99;
+}
+.재처리요청 {
+    background-color: #FF96FF;
+}
+.재검토요청 {
+    background-color: #FF28A7;
+}
+.공종이관 {
+    background-color: #323232;
+}
+/* 하자리스트 상태 스타일 *//* 하자리스트 상태 스타일 *//* 하자리스트 상태 스타일 *//* 하자리스트 상태 스타일 */
+
+
+
+
+
+
+
+
 /* 결과 영역 스타일 */
 #result-container {
     display: flex; /* 플렉스 컨테이너로 설정하여 자식 요소들을 일렬로 배치 */
@@ -84,7 +133,7 @@ img:hover {
 
 #result-container > div {
     flex: 1; /* 각 상자가 동일한 너비를 가지도록 설정 */
-    padding: 20px; /* 상자 내부의 패딩을 20px로 설정 */
+    padding: 25px; /* 상자 내부의 패딩을 20px로 설정 */
     box-sizing: border-box; /* 패딩과 보더를 포함하여 너비를 계산 */
     border: 1px solid #000; /* 상자 테두리를 1px의 검은색 실선으로 설정 */
     border-radius: 10px; /* 상자의 모서리에 10px의 라운드 효과를 추가 */
