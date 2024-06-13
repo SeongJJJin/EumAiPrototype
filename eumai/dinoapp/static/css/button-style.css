@@ -1,0 +1,69 @@
+/* dino_start */
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#startButton-style {
+    display: block;
+    font-size: 20px;
+    padding: 15px 30px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+/* dino_result */
+
+#inference-btn {
+    position: fixed; /* 화면의 고정된 위치에 버튼을 배치 */
+    top: 20px; /* 화면 위쪽에서 20px 떨어진 위치에 배치 */
+    left: 20px; /* 화면 왼쪽에서 20px 떨어진 위치에 배치 */
+    padding: 10px 20px; /* 버튼의 내부 여백을 설정 */
+    background-color: #007bff; /* 버튼의 배경색을 설정 */
+    color: white; /* 버튼의 텍스트 색상을 설정 */
+    border: none; /* 버튼의 테두리를 제거 */
+    border-radius: 5px; /* 버튼 모서리에 5px의 라운드 효과를 추가 */
+    cursor: pointer; /* 커서를 버튼 위에 올렸을 때 포인터로 변경 */
+    z-index: 1000; /* 버튼이 다른 요소들 위에 표시되도록 설정 */
+}
+
+#all-apply-container{
+    margin-top: 10px; /* 컨테이너의 상단 여백을 100px로 설정하여 버튼 아래에 위치하게 함 */
+    padding: 30px; /* 컨테이너 내부의 여백을 설정 */
+}
+
+#all-apply-btn {
+    top: 100px;
+    padding: 20px 40px;
+    background-color: #0A9696;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#exclude-apply-button-container {
+    display: flex; /* 플렉스 컨테이너로 설정 */
+    flex-direction: column; /* 버튼을 위아래로 배치 */
+    gap: 10px; /* 버튼 사이의 간격을 10px로 설정 */
+}
+
+#exclude-apply-button-container button {
+    padding: 10px 20px; /* 버튼 내부 여백 설정 */
+    border: none; /* 버튼 테두리 제거 */
+    border-radius: 10px; /* 버튼 모서리에 10px의 라운드 효과 추가 */
+    color: white; /* 버튼 텍스트 색상 설정 */
+    cursor: pointer; /* 커서를 버튼 위에 올렸을 때 포인터로 변경 */
+}
+
+/* 제외하기 버튼 색상 */
+#exclude-btn {
+    background-color: #323232;
+}
+
+/* 적용하기 버튼 색상 */
+#apply-btn {
+    background-color: #0A9696;
+}

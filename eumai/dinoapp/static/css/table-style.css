@@ -1,0 +1,96 @@
+/* 표 스타일 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+h1 {
+    margin: 20px 0;
+}
+
+table {
+    width: 80%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    table-layout: auto;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 15px;
+    min-width: 100px;
+    word-wrap: break-word;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+img {
+    width: 150px;
+    height: auto;
+    transition: transform 0.25s ease;
+}
+
+img:hover {
+    cursor: pointer;
+    transform: scale(1.5);
+}
+
+.highlight-row {
+    background-color: #F4AAAA;
+}
+
+#table-container {
+    margin: 10px;  /* 상단 여백을 10px로 설정하고, 좌우 여백을 자동으로 설정하여 중앙 정렬 */
+    padding: 20px;  /* 컨테이너 내부의 여백을 설정 */
+    width: 80%;  /* 컨테이너의 너비를 80%로 설정 (필요에 따라 조정 가능) */
+}
+
+/* 결과 영역 스타일 */
+#result-container {
+    display: flex; /* 플렉스 컨테이너로 설정하여 자식 요소들을 일렬로 배치 */
+    justify-content: space-between; /* 자식 요소들 사이에 공간을 균등하게 분배 */
+    gap: 20px; /* 상자들 사이의 간격을 20px로 설정 */
+}
+
+#result-container > div {
+    flex: 1; /* 각 상자가 동일한 너비를 가지도록 설정 */
+    padding: 20px; /* 상자 내부의 패딩을 20px로 설정 */
+    box-sizing: border-box; /* 패딩과 보더를 포함하여 너비를 계산 */
+    border: 1px solid #000; /* 상자 테두리를 1px의 검은색 실선으로 설정 */
+    border-radius: 10px; /* 상자의 모서리에 10px의 라운드 효과를 추가 */
+    text-align: center; /* 상자 내부의 텍스트를 가운데 정렬 */
+}
+
+h3 {
+    margin: 0; /* h3 요소의 기본 마진을 제거 */
+}

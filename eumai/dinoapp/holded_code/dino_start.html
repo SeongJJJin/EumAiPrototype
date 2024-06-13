@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Start Inference</title>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <style>
+        /* 기존 스타일은 유지 */
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .content-container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .scroll-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 620px;
+            padding: 20px 0;
+            gap: 10px;
+        }
+        .scroll-container img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            transition: transform .2s;
+        }
+        .scroll-container img:hover {
+            transform: scale(1.5);
+        }
+        .image-label {
+            cursor: pointer;
+            display: inline-block;
+        }
+        .image-checkbox:checked + .image {
+            border: 3px solid #4CAF50;
+            transform: scale(1.1);
+        }
+        .image-checkbox {
+            display: none;
+        }
+        #startButton, .control-button {
+            font-size: 20px;
+            padding: 15px 30px;
+            margin: 10px; /* 기존 margin-top 제거하고, 양쪽 마진 추가 */
+        }
+        #loadingMessage {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<form id="imageForm" method="post" enctype="multipart/form-data">
+    <div class="content-container">
+        <!-- 전체 선택 및 전체 해제 버튼 추가 -->
+        <div>
+            <button type="button" class="control-button" onclick="selectAllImages(true)">전체 선택</button>
+            <button type="button" class="control-button" onclick="selectAllImages(false)">전체 해제</button>
+        </div>
+        <div class="scroll-container">
+            {% load static %}
+            {% for image in image_files %}
+                <label class="image-label">
+                    <input type="checkbox" name="image" value="{{ image }}" class="image-checkbox" hidden>
+                    <img src="{% static image %}" alt="image" class="image">
+                </label>
+            {% endfor %}
+        </div>
+        <button type="button" id="startButton" onclick="startInference()">START</button>
+    </div>
+    <div id="loadingMessage">분석 중...</div>
+</form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script>
+function startInference() {
+    // 기존의 startInference 코드 유지
+    document.getElementById('startButton').style.display = 'none';
+    document.getElementById('loadingMessage').style.display = 'block';
+
+    // 선택된 이미지를 배열로 수집
+    var selectedImages = [];
+    $('.image-checkbox:checked').each(function() {
+        selectedImages.push($(this).val());
+    });
+
+    // 데이터 객체에 선택된 이미지 추가
+    var data = {
+        images: selectedImages
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "inference/",
+        data: JSON.stringify(data), // 데이터를 JSON 문자열로 변환
+        contentType: "application/json", // Content-Type을 JSON으로 설정
+        success: function(response) {
+            console.log(response)
+            window.location.href = "inference_result/";
+        },
+        error: function(error) {
+            console.log(error);
+            alert('오류가 발생했습니다. 콘솔을 확인해주세요.');
+            document.getElementById('startButton').style.display = 'block';
+            document.getElementById('loadingMessage').style.display = 'none';
+        }
+    });
+}
+
+function selectAllImages(selectAll) {
+    // 모든 체크박스를 선택하거나 해제
+    $('.image-checkbox').prop('checked', selectAll);
+}
+</script>
+</body>
+</html>

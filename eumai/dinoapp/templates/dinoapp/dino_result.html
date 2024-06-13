@@ -1,167 +1,124 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>분석 결과</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        h1 {
-            margin: 20px 0;
-        }
-
-        table {
-            width: 80%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            table-layout: auto; /* 테이블 레이아웃을 자동으로 설정 */
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            text-align: center;
-            padding: 15px;
-            min-width: 100px; /* 최소 너비 설정 */
-            word-wrap: break-word; /* 단어가 너무 길 때 줄 바꿈 */
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        img {
-            width: 150px;
-            height: auto;
-            transition: transform 0.25s ease;
-        }
-
-        img:hover {
-            cursor: pointer;
-            transform: scale(1.5);
-        }
-
-        /* "Inference" 버튼 스타일 */
-        .inference-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 1000;
-        }
-
-         /* 모달 스타일 */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            display: flex;
-            flex-direction: column;
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            width: 500px;
-        }
-
-        .modal-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .modal-body > div {
-            margin-bottom: 10px;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-
-        .close-btn, .save-btn {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .close-btn {
-            background-color: #f44336;
-            margin-right: 10px;
-        }
-
-        .modal input {
-            width: 80%;
-            padding: 10px;
-            margin: 10px 0;
-        }
-    </style>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/table-style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/button-style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modal-style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/image-style.css' %}">
 </head>
 <body>
-    <!-- "Inference" 버튼 추가 -->
-    <button class="inference-btn" onclick="location.href='http://127.0.0.1:8000/'">Inference</button>
-
-    <h1>분석 결과</h1>
     <div>
-        {% if error_results_dic %}
+        <button id="inference-btn" onclick="location.href='http://127.0.0.1:8000/inference_start/'">하자 리스트 불러오기</button>
+    </div>
+    <div id="all-apply-container">
+        <button id="all-apply-btn">모두 적용하기</button>
+    </div>
+    <div id="container">
+        <div id="result-container">
+            <div>
+                <h3>전체 하자</h3>
+                <p>{{ final_data.status_waited_count }} 건</p>
+            </div>
+            <div>
+                <h3>분류 하자</h3>
+                <p>도배 {{ final_data.wall_count}} 건</p>
+                <p>타일 {{ final_data.tile_count}} 건</p>
+                <p>기타 {{ final_data.etc_count}} 건</p>
+            </div>
+            <div>
+                <h3>제외 하자</h3>
+                <p>{{ final_data.remove_count}} 건</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="table-container">
+        {% if final_data %}
             <table>
                 <thead>
                     <tr>
-                        <th>이미지 파일</th>
+                        <th>번호</th>
                         <th>동</th>
-                        <th>호</th>
+                        <th>호수</th>
+                        <th>위치</th>
+                        <th>내용</th>
                         <th>공종</th>
-                        <th>세부 공종</th>
-                        <th>하자 유형</th>
-                        <th>수정</th>
+                        <th>세부공종</th>
+                        <th>하자유형</th>
+                        <th>이미지</th>
+                        <th>제외/적용</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for file_name, result in error_results_dic %}
+                    {% for key, result in final_data.defect_list.items %}
                         <tr>
-                            <td><img src="{% static 'images/'|add:file_name %}" alt="Image" onclick="zoomImage(this)"></td>
-                            <td>TEST 동</td>
-                            <td>TEST 호</td>
-                            <td{% if result.0 == 'NULL' %} style="color: red;"{% endif %}>{{ result.0 }}</td>
-                            <td{% if result.1 == 'NULL' %} style="color: red;"{% endif %}>{{ result.1 }}</td>
-                            <td{% if result.2 == 'NULL' %} style="color: red;"{% endif %}>{{ result.2 }}</td>
-                            <td><button onclick="openModal({{ main_type }}, {{ sub_type  }}, {{ errors }})">수정</button></td>
+                            <td>{{ key }}</td>
+                            <td>{{ result.dong }}</td>
+                            <td>{{ result.ho }}</td>
+                            <td>{{ result.location }}</td>
+                            <td>{{ result.content }}</td>
+                            <td>
+                                <div class="modal-container">
+                                    <select onchange="updateData('{{ key }}', 'construct_type', this.value)">
+                                        {% if result.construct_type %}
+                                        <option value="{{ result.construct_type }}" selected>{{ result.construct_type }}</option>
+                                        {% else %}
+                                            <option value=" " selected>선택해주세요.</option>
+                                        {% endif %}
+
+                                        <!-- 아래 옵션들은 실제 현장과 맵핑된 데이터를 고를 수 있어야 한다.-->
+                                        <option value="option2" {% if result.construct_type == 'option2' %}selected{% endif %}>Option 2</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="modal-container">
+                                    <select onchange="updateData('{{ key }}', 'detail_construct_type', this.value)">
+                                        {% if result.detail_construct_type != " "%}
+                                            <option value="{{ result.detail_construct_type }}">{{ result.detail_construct_type }}</option>
+                                        {% else %}
+                                            <option value=" " selected>선택해주세요.</option>
+                                        {% endif %}
+
+                                        <!-- 아래 옵션들은 실제 현장과 맵핑된 데이터를 고를 수 있어야 한다.-->
+                                        <option value="option2" {% if result.detail_construct_type == 'option2' %}selected{% endif %}>Option 2</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="modal-container">
+                                    <select onchange="updateData('{{ key }}', 'defect', this.value)">
+                                        {% if result.defect != " "%}
+                                            <option value="{{ result.defect }}"> {{ result.defect }} </option>
+                                        {% else %}
+                                            <option value=" " selected>선택해주세요.</option>
+                                        {% endif %}
+
+                                        <!-- 아래 옵션들은 실제 현장과 맵핑된 데이터를 고를 수 있어야 한다.-->
+                                        <option value="option2" {% if result.defect == 'option2' %}selected{% endif %}>Option 2</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                {% if result.images %}
+                                    <div class="scroll-container">
+                                        {% for image in result.images %}
+                                            <img src="{{ image }}" alt="이미지" onclick="zoomImage(this)" style="max-width: 100px; height: auto;">
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    이미지 없음
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div id="exclude-apply-button-container">
+                                    <button id="exclude-btn">제외하기</button>
+                                    <button id="apply-btn">적용하기</button>
+                                </div>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -171,24 +128,18 @@
         {% endif %}
     </div>
 
-    <!-- 모달 구조 -->
+    <!-- 모달 창 -->
     <div id="modal" class="modal">
         <div class="modal-content">
-            <h2>결과 수정</h2>
-            <div>
-                <label for="main_type">공종:</label>
-                <select id="main_type"></select>
-            </div>
-            <div>
-                <label for="sub_type">세부 공종:</label>
-                <select id="sub_type"></select>
-            </div>
-            <div>
-                <label for="errors">하자 유형:</label>
-                <select id="errors"></select>
-            </div>
-            <button class="close-btn" onclick="closeModal()">닫기</button>
-            <button class="save-btn" onclick="saveChanges()">저장</button>
+            <h2>내용 수정</h2>
+            <input type="hidden" id="modal-key">
+            <input type="hidden" id="modal-field">
+            <label for="modal-value">값:</label>
+            <select id="modal-value">
+                <!-- 옵션은 JavaScript로 동적으로 채워짐 -->
+            </select>
+            <button onclick="saveChanges()">저장</button>
+            <button onclick="closeModal()">닫기</button>
         </div>
     </div>
 
@@ -197,52 +148,45 @@
             window.open(img.src, '_blank');
         }
 
-        function openModal(main_type, sub_type, errors) {
-            console.log('openModal 호출됨');
-            console.log('main_type:', main_type);
-            console.log('sub_type:', sub_type);
-            console.log('errors:', errors);
-
-            // 각 <select> 요소에 옵션 추가
-            populateSelect('main_type', main_type);
-            populateSelect('sub_type', sub_type);
-            populateSelect('errors', errors);
-
-            document.getElementById('modal').style.display = 'flex';
-        }
-
-        function populateSelect(selectId, options) {
-            const selectElement = document.getElementById(selectId);
-            selectElement.innerHTML = ''; // 기존 옵션 제거
-
-            options.forEach(option => {
-                const opt = document.createElement('option');
-                opt.value = option;
-                opt.text = option;
-                selectElement.appendChild(opt);
+        function updateData(key, field, value) {
+            fetch('/update_data/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    key: key,
+                    field: field,
+                    value: value
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('업데이트 성공');
+                } else {
+                    console.error('업데이트 실패');
+                }
+            })
+            .catch(error => {
+                console.error('에러 발생:', error);
             });
         }
 
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('tbody tr');
+            console.log('Row:', rows);
 
-        function saveChanges() {
-            // 선택된 값을 가져오기
-            const main_type = document.getElementById('main_type').value;
-            const sub_type = document.getElementById('sub_type').value;
-            const errors = document.getElementById('errors').value;
+            rows.forEach(row => {
+                const detailConstructTypeCell = row.querySelector('td:nth-child(6) select');
 
-            console.log('저장된 main_type:', main_type);
-            console.log('저장된 sub_type:', sub_type);
-            console.log('저장된 errors:', errors);
-
-            // 여기서 데이터를 저장하는 로직을 추가하세요.
-            // 예: 서버로 전송하거나 로컬 스토리지에 저장하는 등의 작업
-
-            alert('변경사항이 저장되었습니다.');
-            closeModal();
-        }
+                if (detailConstructTypeCell && detailConstructTypeCell.value.trim() === "") {
+                    console.log('Detail Construct Type Cell:', detailConstructTypeCell);
+                    row.classList.add('highlight-row');
+                }
+            });
+        });
     </script>
 </body>
 </html>
