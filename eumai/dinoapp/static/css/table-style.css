@@ -133,7 +133,7 @@ img:hover {
 
 #result-container > div {
     flex: 1; /* 각 상자가 동일한 너비를 가지도록 설정 */
-    padding: 25px; /* 상자 내부의 패딩을 20px로 설정 */
+    padding: 30px; /* 상자 내부의 패딩을 20px로 설정 */
     box-sizing: border-box; /* 패딩과 보더를 포함하여 너비를 계산 */
     border: 1px solid #000; /* 상자 테두리를 1px의 검은색 실선으로 설정 */
     border-radius: 10px; /* 상자의 모서리에 10px의 라운드 효과를 추가 */

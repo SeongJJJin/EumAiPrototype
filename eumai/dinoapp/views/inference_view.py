@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .supervisor_api import Inspection_api
-from .data_process import extract_image, insert_construct_all_defect, split_dict
+from .supervisor_api import Inspection_api, Defect_mapping_data_api
+from .data_process import extract_image, insert_construct_all_defect, split_dict, insert_modified_data
 from .aws_sagemaker_api import request_to_sagemaker
 import os
 import json
@@ -16,7 +16,10 @@ apt_pk = os.getenv('DEFAULT_APT_PK')
 status = os.getenv('DEFAULT_STATUS')
 
 inspection_data = {}
-error_results_dic = {}
+error_results = {}
+final_data = {}
+modified_final_data = {}
+defect_mapping_data = Defect_mapping_data_api(token).defect_mapping_data()
 
 def apart_detail_selecter(request):
     return render(request, 'apart_selecter_view.html')
@@ -45,13 +48,13 @@ def inference_start(request):
 
 @async_to_sync
 async def inference_processing(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         all_result = await async_inference_processing()
 
-        global error_results_dic
-        error_results_dic = all_result
+        global error_results
+        error_results = all_result
 
-        return JsonResponse(error_results_dic)
+        return JsonResponse(error_results)
     else:
         return render(request, 'inference_start_view.html')
 
@@ -74,16 +77,28 @@ async def async_inference_processing():
     return all_result
 
 def inference_result(request):
-    print(error_results_dic)
-    final_data = insert_construct_all_defect(inspection_data, error_results_dic)
-    return render(request, 'inference_result_view.html', {"final_data": final_data})
+    global final_data
+    # 추론 결과 데이터
+    final_data = insert_construct_all_defect(inspection_data, error_results)
+
+    # 아파트 별 맵핑 데이터
+    return render(request, 'inference_result_view.html', {"final_data": final_data, "defect_mapping_data": defect_mapping_data})
 
 
-# 데이터 수정 및 적용 했을 때 처리 함수
 def update_data(request):
-    if request == 'POST':
+    global modified_final_data
 
-        data = json.loads(request.body())
-        return JsonResponse(data)
-    else:
-        return JsonResponse("잘못된 요청~~")
+    if request.method == "POST":
+        modified_error_results = json.loads(request.body)
+
+        if not modified_error_results:
+            modified_final_data = final_data
+        else:
+            modified_final_data = insert_modified_data(inspection_data, modified_error_results)
+
+    return render(request, 'modified_defect_list_view.html', {"modified_final_data": modified_final_data})
+
+
+
+
+

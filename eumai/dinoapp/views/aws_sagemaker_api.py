@@ -6,7 +6,9 @@ import json
 load_dotenv()
 
 
+# Sagemaker 배포한 모델 추론 요청 코드 (비동기 처리 필수)
 async def request_to_sagemaker(data):
+
     extracted_images = data
 
     sagemaker_session = aioboto3.Session(profile_name=os.getenv('PROFILE_NAME'),

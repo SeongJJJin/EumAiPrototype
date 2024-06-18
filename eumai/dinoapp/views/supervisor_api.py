@@ -1,4 +1,8 @@
+import json
+
+from django.conf import settings
 import requests
+import os
 
 
 class Inspection_api():
@@ -60,3 +64,24 @@ class Inspection_api():
             return processed_data
         except KeyError:
             raise
+
+
+class Defect_mapping_data_api():
+
+    def __init__(self, token):
+        self.CHAEDLE_TOKEN = token
+
+    def defect_mapping_data(self):
+        try:
+            # 실제 API 요청 로직
+
+            # 로컬 테스트
+            mapping_data_path = os.path.join(settings.DINOAPP_STATIC_ROOT, "jsons/ai.json")
+            with open(mapping_data_path, "r", encoding='utf-8') as f:
+                data = json.load(f)
+
+            return data
+        except Exception as e:
+            return e
+
+

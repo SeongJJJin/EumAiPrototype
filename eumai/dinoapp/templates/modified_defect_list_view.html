@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>수정 결과</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/table-style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/image-style.css' %}">
+</head>
+<body>
+    <div id="table-container">
+        <div>
+            {% if modified_final_data %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>동</th>
+                            <th>호수</th>
+                            <th>위치</th>
+                            <th>내용</th>
+                            <th>공종</th>
+                            <th>세부공종</th>
+                            <th>하자유형</th>
+                            <th>이미지</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key, result in modified_final_data.defect_list.items %}
+                            <tr>
+                                <td>{{ key }}</td>
+                                <td>{{ result.dong }}</td>
+                                <td>{{ result.ho }}</td>
+                                <td>{{ result.location }}</td>
+                                <td>{{ result.content }}</td>
+                                <td>{{ result.construct_type }}</td>
+                                <td>{{ result.detail_construct_type }}</td>
+                                <td>{{ result.defect }}</td>
+                                <td>
+                                    {% if result.images %}
+                                        <div class="scroll-container">
+                                            {% for image in result.images %}
+                                                <img src="{{ image }}" alt="이미지" style="max-width: 100px; height: auto;">
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        이미지 없음
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>점검 데이터가 없습니다.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

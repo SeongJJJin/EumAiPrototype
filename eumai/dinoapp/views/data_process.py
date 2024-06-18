@@ -26,7 +26,7 @@ def insert_construct_all_defect(inspection_data, add_data):
                     inspection_data["defect_list"][i]["detail_construct_type"] = add_data[str(i)][0]
                 else:
                     inspection_data["etc_count"] += 1
-                    inspection_data["defect_list"][i]["detail_construct_type"] = "etc"
+                    inspection_data["defect_list"][i]["detail_construct_type"] = " "
 
                 inspection_data["defect_list"][i]["defect"] = add_data[str(i)][1] if add_data[str(i)][1] != None else " "
             else:
@@ -34,6 +34,26 @@ def insert_construct_all_defect(inspection_data, add_data):
                 inspection_data["defect_list"][i]["construct_type"] = " "
                 inspection_data["defect_list"][i]["detail_construct_type"] = " "
                 inspection_data["defect_list"][i]["defect"] = " "
+
+        return inspection_data
+    else:
+        return "다시 생각;;"
+
+
+def insert_modified_data(inspection_data, add_data):
+    inspection_data["status_waited_count"] = len(inspection_data["defect_list"])
+    inspection_data["tile_count"] = 0
+    inspection_data["wall_count"] = 0
+    inspection_data["etc_count"] = 0
+    inspection_data["remove_count"] = 0
+
+    if len(inspection_data["defect_list"]) == len(add_data):
+        for i in range(1, len(inspection_data["defect_list"])+1):
+            print(add_data[str(i)])
+
+            inspection_data["defect_list"][i]["construct_type"] = add_data[str(i)]["construct_type"]
+            inspection_data["defect_list"][i]["detail_construct_type"] = add_data[str(i)]["detail_construct_type"]
+            inspection_data["defect_list"][i]["defect"] = add_data[str(i)]["defect"]
 
         return inspection_data
     else:

@@ -14,7 +14,7 @@
         <button id="inference-btn" onclick="location.href='http://127.0.0.1:8000/inference_start/'">하자 리스트 불러오기</button>
     </div>
     <div id="all-apply-container">
-        <button id="all-apply-btn" onclick="">모두 적용하기</button>
+        <button id="all-apply-btn" onclick="updateData()">모두 적용하기</button>
     </div>
     <div>
         <div id="result-container">
@@ -55,50 +55,65 @@
                 <tbody>
                     {% for key, result in final_data.defect_list.items %}
                         <tr>
-                            <td>{{ key }}</td>
+                            <td id="key-value">{{ key }}</td>
                             <td>{{ result.dong }}</td>
                             <td>{{ result.ho }}</td>
                             <td>{{ result.location }}</td>
                             <td>{{ result.content }}</td>
                             <td>
                                 <div class="modal-container">
-                                    <select onchange="updateData('{{ key }}', 'construct_type', this.value)">
+                                    <select name="construct_type">
                                         {% if result.construct_type %}
                                         <option value="{{ result.construct_type }}" selected>{{ result.construct_type }}</option>
                                         {% else %}
                                             <option value=" " selected>선택해주세요.</option>
                                         {% endif %}
 
-                                        <!-- 아래 옵션들은 실제 현장과 맵핑된 데이터를 고를 수 있어야 한다.-->
-                                        <option value="option2" {% if result.construct_type == 'option2' %}selected{% endif %}>Option 2</option>
+                                        {% for mapping in defect_mapping_data %}
+                                            {% if result.defect == mapping.l %}
+                                                {% for item in mapping.m %}
+                                                    <option value="{{ item.wi }}" {% if result.construct_type == item.wi %}selected{% endif %}>{{ item.wi }}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
                                     </select>
                                 </div>
                             </td>
                             <td>
                                 <div class="modal-container">
-                                    <select onchange="updateData('{{ key }}', 'detail_construct_type', this.value)">
+                                    <select name="detail_construct_type">
                                         {% if result.detail_construct_type != " "%}
                                             <option value="{{ result.detail_construct_type }}">{{ result.detail_construct_type }}</option>
                                         {% else %}
                                             <option value=" " selected>선택해주세요.</option>
                                         {% endif %}
 
-                                        <!-- 아래 옵션들은 실제 현장과 맵핑된 데이터를 고를 수 있어야 한다.-->
-                                        <option value="option2" {% if result.detail_construct_type == 'option2' %}selected{% endif %}>Option 2</option>
+                                        {% for mapping in defect_mapping_data %}
+                                            {% if result.defect == mapping.l %}
+                                                {% for item in mapping.m %}
+                                                    <option value="{{ item.dwi }}" {% if result.detail_construct_type == item.dwi %}selected{% endif %}>{{ item.dwi }}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
                                     </select>
                                 </div>
                             </td>
                             <td>
                                 <div class="modal-container">
-                                    <select onchange="updateData('{{ key }}', 'defect', this.value)">
+                                    <select name="defect">
                                         {% if result.defect != " "%}
                                             <option value="{{ result.defect }}"> {{ result.defect }} </option>
                                         {% else %}
                                             <option value=" " selected>선택해주세요.</option>
                                         {% endif %}
 
-                                        <!-- 아래 옵션들은 실제 현장과 맵핑된 데이터를 고를 수 있어야 한다.-->
-                                        <option value="option2" {% if result.defect == 'option2' %}selected{% endif %}>Option 2</option>
+                                        {% for mapping in defect_mapping_data %}
+                                            {% if result.defect == mapping.l %}
+                                                {% for item in mapping.m %}
+                                                    <option value="{{ item.ci }}" {% if result.defect == item.ci %}selected{% endif %}>{{ item.ci }}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
                                     </select>
                                 </div>
                             </td>
@@ -133,32 +148,6 @@
             window.open(img.src, '_blank');
         }
 
-        function updateData(key, field, value) {
-            fetch('/update_data/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: JSON.stringify({
-                    key: key,
-                    field: field,
-                    value: value
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('업데이트 성공');
-                } else {
-                    console.error('업데이트 실패');
-                }
-            })
-            .catch(error => {
-                console.error('에러 발생:', error);
-            });
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
             const rows = document.querySelectorAll('tbody tr');
             console.log('Row:', rows);
@@ -172,6 +161,52 @@
                 }
             });
         });
+
+        let modifiedData = {};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('#apply-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    console.log("클릭 테스트");
+                    document.querySelectorAll('tr').forEach(row => {
+                        let keyElement = row.querySelector('td#key-value');
+
+                        console.log(keyElement)
+
+                        if (keyElement) {
+                            let key = keyElement.innerText;
+                            modifiedData[key] = {
+                                construct_type: row.querySelector('select[name="construct_type"]').value,
+                                detail_construct_type: row.querySelector('select[name="detail_construct_type"]').value,
+                                defect: row.querySelector('select[name="defect"]').value
+                            };
+                        }
+                    });
+                    console.log(modifiedData);
+                    alert('저장완료');
+                });
+            });
+        });
+
+
+        function updateData() {
+            fetch('../update_data/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                redirect: 'follow',
+                body: JSON.stringify(modifiedData)
+            })
+            .then(data => {
+                console.log('Success:', data);
+                window.location.href = '../update_data/';
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
     </script>
 </body>
 </html>

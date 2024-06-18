@@ -27,6 +27,7 @@ SECRET_KEY = 'django-insecure-vmsj=o^r%)grmf!at&orifjkcrvgd$nk*l1@&&2)_3yx9w7ew4
 DEBUG = True
 
 ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['172.30.1.61'] ## 동일 네트워크만 가능
 
 
 # Application definition
