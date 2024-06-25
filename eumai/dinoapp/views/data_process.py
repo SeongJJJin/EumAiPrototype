@@ -8,6 +8,7 @@ def extract_image(data):
 def insert_construct_all_defect(inspection_data, add_data):
     inspection_data["status_waited_count"] = len(inspection_data["defect_list"])
     inspection_data["tile_count"] = 0
+    inspection_data["pl_count"] = 0
     inspection_data["wall_count"] = 0
     inspection_data["etc_count"] = 0
     inspection_data["remove_count"] = 0
@@ -21,11 +22,13 @@ def insert_construct_all_defect(inspection_data, add_data):
                 if add_data[str(i)][0] != "etc":
                     if add_data[str(i)][0] == "tile":
                         inspection_data["tile_count"] += 1
+                    elif add_data[str(i)][0] == "pl":
+                        inspection_data["pl_count"] += 1
                     else:
                         inspection_data["wall_count"] += 1
                     inspection_data["defect_list"][i]["detail_construct_type"] = add_data[str(i)][0]
                 else:
-                    inspection_data["etc_count"] += 1
+                    inspection_data["remove_count"] += 1
                     inspection_data["defect_list"][i]["detail_construct_type"] = " "
 
                 inspection_data["defect_list"][i]["defect"] = add_data[str(i)][1] if add_data[str(i)][1] != None else " "

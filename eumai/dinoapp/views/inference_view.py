@@ -62,10 +62,10 @@ async def async_inference_processing():
     all_result = {}
 
     extracted_images = extract_image(inspection_data)
+    print(extracted_images)
     chunks = split_dict(extracted_images, 2)
     tasks = [request_to_sagemaker(chunk) for chunk in chunks]
-
-    batch_size = 150
+    batch_size = 199
 
     for i in range(0, len(tasks), batch_size):
         batch_task = tasks[i:i+batch_size]
@@ -73,7 +73,9 @@ async def async_inference_processing():
 
         for result in results:
             all_result.update(result)
+            print(result)
 
+    print(all_result)
     return all_result
 
 def inference_result(request):

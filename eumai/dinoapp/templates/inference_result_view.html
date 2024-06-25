@@ -26,7 +26,7 @@
                 <h3>분류 하자</h3>
                 <p>도배 {{ final_data.wall_count}} 건</p>
                 <p>타일 {{ final_data.tile_count}} 건</p>
-                <p>기타 {{ final_data.etc_count}} 건</p>
+                <p>PL {{ final_data.pl_count}} 건</p>
             </div>
             <div>
                 <h3>제외 하자</h3>
@@ -70,8 +70,8 @@
                                         {% endif %}
 
                                         {% for mapping in defect_mapping_data %}
-                                            {% if result.defect == mapping.l %}
-                                                {% for item in mapping.m %}
+                                            {% if result.defect == mapping.c %}
+                                                {% for item in mapping.r %}
                                                     <option value="{{ item.wi }}" {% if result.construct_type == item.wi %}selected{% endif %}>{{ item.wi }}</option>
                                                 {% endfor %}
                                             {% endif %}
@@ -89,8 +89,8 @@
                                         {% endif %}
 
                                         {% for mapping in defect_mapping_data %}
-                                            {% if result.defect == mapping.l %}
-                                                {% for item in mapping.m %}
+                                            {% if result.defect == mapping.c %}
+                                                {% for item in mapping.r %}
                                                     <option value="{{ item.dwi }}" {% if result.detail_construct_type == item.dwi %}selected{% endif %}>{{ item.dwi }}</option>
                                                 {% endfor %}
                                             {% endif %}
@@ -108,8 +108,8 @@
                                         {% endif %}
 
                                         {% for mapping in defect_mapping_data %}
-                                            {% if result.defect == mapping.l %}
-                                                {% for item in mapping.m %}
+                                            {% if result.defect == mapping.c %}
+                                                {% for item in mapping.r %}
                                                     <option value="{{ item.ci }}" {% if result.defect == item.ci %}selected{% endif %}>{{ item.ci }}</option>
                                                 {% endfor %}
                                             {% endif %}
